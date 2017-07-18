@@ -873,28 +873,28 @@ void readData() {
 	FILE* f1 = fopen((folder + "entity2id.txt").c_str(), "r");
 	FILE* f2 = fopen((folder + "relation2id.txt").c_str(), "r");
 	int x;
-	while (fscanf(f1, "%s%d", buf, &x) == 2) {
+	while (fscanf(f1, "%s\t%d", buf, &x) == 2) {
 		string st = buf;
 		entity2id[st] = x;
 		id2entity[x] = st;
 		entity_num++;
 	}
-	while (fscanf(f2, "%s%d", buf, &x) == 2) {
+	while (fscanf(f2, "%s\t%d", buf, &x) == 2) {
 		string st = buf;
 		relation2id[st] = x;
 		id2relation[x] = st;
 		relation_num++;
 	}
 
+	char headBuf[1000];
+	char tailBuf[1000];
+	char relationBuf[1000];
+
 	FILE* f_kb = fopen((folder + "train.txt").c_str(), "r");
-	while (fscanf(f_kb, "%s", buf) == 1) {
-		string head = buf; //left entity
-
-		fscanf(f_kb, "%s", buf);
-		string rel = buf;	//relation
-
-		fscanf(f_kb, "%s", buf);
-		string tail = buf;	//right entity
+	while (fscanf(f_kb, "%s\t%s\t%s", headBuf, tailBuf, relationBuf) == 3) {
+		string head = headBuf; //left entity
+		string tail = tailBuf; //right entity
+		string rel = relationBuf; //relation
 
 		if (entity2id.count(head) == 0) {
 			cout << "miss entity:" << head << endl;
@@ -913,6 +913,7 @@ void readData() {
 		//Input: left/head entity, right/tail entity, relation
 		stranse.add(entity2id[head], relation2id[rel], entity2id[tail]);
 	}
+
 	for (int i = 0; i < relation_num; i++) {
 		double sum1 = 0, sum2 = 0;
 		for (map<int, int>::iterator it = left_entity[i].begin();
@@ -922,6 +923,7 @@ void readData() {
 		}
 		left_avg[i] = sum2 / sum1;
 	}
+
 	for (int i = 0; i < relation_num; i++) {
 		double sum1 = 0, sum2 = 0;
 		for (map<int, int>::iterator it = right_entity[i].begin();
@@ -931,19 +933,16 @@ void readData() {
 		}
 		right_avg[i] = sum2 / sum1;
 	}
+
 	cout << "#relations = " << relation_num << endl;
 	cout << "#entities = " << entity_num << endl;
 	fclose(f_kb);
 
 	f_kb = fopen((folder + "valid.txt").c_str(), "r");
-	while (fscanf(f_kb, "%s", buf) == 1) {
-		string head = buf;
-
-		fscanf(f_kb, "%s", buf);
-		string rel = buf;
-
-		fscanf(f_kb, "%s", buf);
-		string tail = buf;
+	while (fscanf(f_kb, "%s\t%s\t%s", headBuf, tailBuf, relationBuf) == 3) {
+		string head = headBuf; //left entity
+		string tail = tailBuf; //right entity
+		string rel = relationBuf; //relation
 
 		if (entity2id.count(head) == 0) {
 			cout << "miss entity:" << head << endl;
@@ -962,14 +961,10 @@ void readData() {
 	fclose(f_kb);
 
 	f_kb = fopen((folder + "test.txt").c_str(), "r");
-	while (fscanf(f_kb, "%s", buf) == 1) {
-		string head = buf;
-
-		fscanf(f_kb, "%s", buf);
-		string rel = buf;
-
-		fscanf(f_kb, "%s", buf);
-		string tail = buf;
+	while (fscanf(f_kb, "%s\t%s\t%s", headBuf, tailBuf, relationBuf) == 3) {
+		string head = headBuf; //left entity
+		string tail = tailBuf; //right entity
+		string rel = relationBuf; //relation
 
 		if (entity2id.count(head) == 0) {
 			cout << "miss entity:" << head << endl;
